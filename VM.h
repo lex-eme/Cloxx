@@ -3,6 +3,8 @@
 #include "Chunk.h"
 #include "Value.h"
 
+#include <cstdint>
+
 constexpr int STACK_MAX = 256;
 
 enum InterpretResult
@@ -17,16 +19,16 @@ struct VM
 public:
     VM();
 
-    InterpretResult interpret(Chunk* c);
+    InterpretResult interpret(const char* source);
 
 private:
     Chunk* chunk = nullptr;
-    unsigned __int8* ip = nullptr;
+    uint8_t* ip = nullptr;
     Value stack[STACK_MAX];
     Value* stackTop;
 
     InterpretResult run();
-    inline unsigned __int8 readByte();
+    inline uint8_t readByte();
     inline Value readConstant();
     void resetStack();
     void push(Value value);

@@ -1,10 +1,9 @@
 #include "Chunk.h"
+#include "Value.h"
 
-Chunk::Chunk()
-{
-}
+#include <cstdint>
 
-void Chunk::writeChunk(unsigned __int8 byte, int line)
+void Chunk::writeChunk(std::uint8_t byte, int line)
 {
     code.push_back(byte);
     lines.push_back(line);

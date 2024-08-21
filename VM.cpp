@@ -2,18 +2,19 @@
 
 #include <cstdio>
 
-#include "debug.h"
+#include "Debug.h"
+#include "Compiler.h"
 
 VM::VM()
 {
     resetStack();
 }
 
-InterpretResult VM::interpret(Chunk* c)
+InterpretResult VM::interpret(const char* source)
 {
-    chunk = c;
-    ip = chunk->code.data();
-    return run();
+    Compiler compiler;
+    compiler.compile(source);
+    return InterpretResult::INTERPRET_OK;
 }
 
 InterpretResult VM::run()
@@ -39,7 +40,7 @@ InterpretResult VM::run()
         disassembleInstruction(*chunk, (int)(ip - chunk->code.data()));
     #endif
 
-        unsigned __int8 instruction;
+        std::uint8_t instruction;
         switch (instruction = readByte())
         {
         case OpCode::OP_CONSTANT:
@@ -67,7 +68,7 @@ InterpretResult VM::run()
 #undef BINARY_OP
 }
 
-inline unsigned __int8 VM::readByte()
+inline std::uint8_t VM::readByte()
 {
     return *ip++;
 }
