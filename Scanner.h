@@ -1,6 +1,10 @@
 #pragma once
 
-enum TokenType
+#include <cstdint>
+
+#include "Source.h"
+
+enum TokenType: std::uint8_t
 {
     // Single-character tokens.
     TOKEN_LEFT_PAREN, TOKEN_RIGHT_PAREN,
@@ -38,10 +42,13 @@ public:
     const char* current;
     int line;
 
-    Scanner(const char* source);
+    explicit Scanner(const Source& source);
     Token nextToken();
 
 private:
+    static bool isDigit(char c);
+    static bool isAlpha(char c);
+
     bool isAtEnd() const;
     Token makeToken(TokenType type) const;
     Token errorToken(const char* message) const;
@@ -51,9 +58,7 @@ private:
     char peek() const;
     char peekNext();
     Token string();
-    bool isDigit(char c);
     Token number();
-    bool isAlpha(char c);
     Token identifier();
     TokenType identifierType();
     TokenType checkKeyword(int start, int length, const char* rest, TokenType type) const;

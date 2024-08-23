@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Source.h"
+
 class Compiler
 {
 public:
     Compiler() = default;
 
-    void compile(const char* source);    
+    void compile(const Source& source);    
 };

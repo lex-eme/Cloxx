@@ -4,7 +4,6 @@
 #include <cstdio>
 
 #include "Chunk.h"
-#include "Value.h"
 
 #define DEBUG_TRACE_EXECUTION
 

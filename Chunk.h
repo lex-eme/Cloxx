@@ -5,7 +5,7 @@
 
 #include "Value.h"
 
-enum OpCode
+enum OpCode: std::uint8_t
 {
     OP_CONSTANT,
     OP_ADD,
@@ -18,9 +18,6 @@ enum OpCode
 
 class Chunk
 {
-private:
-
-
 public:
     std::vector<std::uint8_t> code;
     std::vector<int> lines;

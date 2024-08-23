@@ -14,4 +14,5 @@ add_executable(${PROJECT_NAME}
     VM.cpp
     Compiler.cpp
     Scanner.cpp
+    Source.cpp
     )

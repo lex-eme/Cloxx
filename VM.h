@@ -1,13 +1,15 @@
 #pragma once
 
+#include <cstdint>
+#include <array>
+
 #include "Chunk.h"
 #include "Value.h"
-
-#include <cstdint>
+#include "Source.h"
 
 constexpr int STACK_MAX = 256;
 
-enum InterpretResult
+enum InterpretResult: std::uint8_t
 {
     INTERPRET_OK,
     INTERPRET_COMPILE_ERROR,
@@ -19,12 +21,12 @@ struct VM
 public:
     VM();
 
-    InterpretResult interpret(const char* source);
+    InterpretResult interpret(const Source& source);
 
 private:
     Chunk* chunk = nullptr;
     uint8_t* ip = nullptr;
-    Value stack[STACK_MAX];
+    std::array<Value, STACK_MAX> stack;
     Value* stackTop;
 
     InterpretResult run();

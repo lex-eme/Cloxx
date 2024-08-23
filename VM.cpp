@@ -1,16 +1,20 @@
 #include "VM.h"
 
 #include <cstdio>
+#include <cstdint>
 
 #include "Debug.h"
 #include "Compiler.h"
+#include "Source.h"
+#include "Value.h"
+#include "Chunk.h"
 
 VM::VM()
 {
     resetStack();
 }
 
-InterpretResult VM::interpret(const char* source)
+InterpretResult VM::interpret(const Source& source)
 {
     Compiler compiler;
     compiler.compile(source);
@@ -21,8 +25,8 @@ InterpretResult VM::run()
 {
 #define BINARY_OP(op) \
     do { \
-      double b = pop(); \
-      double a = pop(); \
+      const double b = pop(); \
+      const double a = pop(); \
       push(a op b); \
     } while (false)
 
@@ -30,7 +34,7 @@ InterpretResult VM::run()
     {
     #ifdef DEBUG_TRACE_EXECUTION
         printf("          ");
-        for (Value* slot = stack; slot < stackTop; slot++)
+        for (Value* slot = stack.data(); slot < stackTop; slot++)
         {
             printf("[ ");
             printValue(*slot);
@@ -40,12 +44,12 @@ InterpretResult VM::run()
         disassembleInstruction(*chunk, (int)(ip - chunk->code.data()));
     #endif
 
-        std::uint8_t instruction;
-        switch (instruction = readByte())
+        std::uint8_t instruction = readByte();
+        switch (instruction)
         {
         case OpCode::OP_CONSTANT:
         {
-            Value constant = readConstant();
+            const Value constant = readConstant();
             push(constant);
             break;
         }
@@ -80,7 +84,7 @@ inline Value VM::readConstant()
 
 void VM::resetStack()
 {
-    stackTop = stack;
+    stackTop = stack.data();
 }
 
 void VM::push(Value value)

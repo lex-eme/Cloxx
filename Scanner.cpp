@@ -2,11 +2,25 @@
 
 #include <cstring>
 
-Scanner::Scanner(const char* source)
-    : start(source)
-    , current(source)
+#include "Source.h"
+
+Scanner::Scanner(const Source& source)
+    : start(source[0])
+    , current(source[0])
     , line(1)
 {
+}
+
+bool Scanner::isDigit(char c)
+{
+    return c >= '0' && c <= '9';
+}
+
+bool Scanner::isAlpha(char c)
+{
+    return  (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            c == '_';
 }
 
 Token Scanner::nextToken()
@@ -129,11 +143,6 @@ Token Scanner::string()
     return makeToken(TOKEN_STRING);
 }
 
-bool Scanner::isDigit(char c)
-{
-    return c >= '0' && c <= '9';
-}
-
 Token Scanner::number()
 {
     while (isDigit(peek())) advance();
@@ -146,13 +155,6 @@ Token Scanner::number()
     }
 
     return makeToken(TOKEN_NUMBER);
-}
-
-bool Scanner::isAlpha(char c)
-{
-    return  (c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            c == '_';
 }
 
 Token Scanner::identifier()

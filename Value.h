@@ -2,18 +2,16 @@
 
 #include <vector>
 
-typedef double Value;
+using Value = double;
 
 void printValue(Value value);
 
 class ValueArray
 {
-private:
-
 public:
     std::vector<Value> values;
 
-    ValueArray();
+    ValueArray() = default;
 
     void writeValue(Value value);
 };

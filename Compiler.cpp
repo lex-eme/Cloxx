@@ -3,9 +3,10 @@
 #include <cstdio>
 
 #include "Scanner.h"
+#include "Source.h"
 
 
-void Compiler::compile(const char* source)
+void Compiler::compile(const Source& source)
 {
     Scanner scanner(source);
 
