@@ -1,9 +1,8 @@
 #include <cstdio>
-#include <cstdlib>
+#include <iostream>
 
 #include "VM.h"
 #include "Source.h"
-#include "Chunk.h"
 
 void runFile(const char* path)
 {
@@ -11,17 +10,17 @@ void runFile(const char* path)
     const Source source(path);
     const InterpretResult result = vm.interpret(source);
 
-    if (result == InterpretResult::INTERPRET_COMPILE_ERROR)
+    if (result == INTERPRET_COMPILE_ERROR)
     {
         std::exit(65);
     }
-    if (result == InterpretResult::INTERPRET_RUNTIME_ERROR)
+    if (result == INTERPRET_RUNTIME_ERROR)
     {
         std::exit(70);
     }
 }
 
-int main(int argc, char* argv[])
+int main(const int argc, char* argv[])
 {
     if (argc == 2)
     {
@@ -29,7 +28,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        fprintf(stderr, "Usage: clox [path]\n");
+        std::cerr << "Usage: clox [path]" << std::endl;
         exit(64);
     }
 

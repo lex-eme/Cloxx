@@ -15,4 +15,4 @@ add_executable(${PROJECT_NAME}
     Compiler.cpp
     Scanner.cpp
     Source.cpp
-    )
+)

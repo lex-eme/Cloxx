@@ -7,13 +7,13 @@
 #include "Chunk.h"
 #include "Value.h"
 
-int simpleInstruction(const std::string& name, int offset)
+int simpleInstruction(const std::string& name, const int offset)
 {
     printf("%s\n", name.c_str());
     return offset + 1;
 }
 
-int constantInstruction(const std::string& name, Chunk& chunk, int offset)
+int constantInstruction(const std::string& name, const Chunk& chunk, const int offset)
 {
     const std::uint8_t constant = chunk.code[offset + 1];
 
@@ -24,7 +24,7 @@ int constantInstruction(const std::string& name, Chunk& chunk, int offset)
     return offset + 2;
 }
 
-int disassembleInstruction(Chunk& chunk, int offset)
+int disassembleInstruction(const Chunk& chunk, const int offset)
 {
     printf("%04d ", offset);
 
@@ -59,7 +59,7 @@ int disassembleInstruction(Chunk& chunk, int offset)
     }
 }
 
-void disassembleChunk(Chunk& chunk, const std::string& name)
+void disassembleChunk(const Chunk& chunk, const std::string& name)
 {
     printf("== %s ==\n", name.c_str());
 

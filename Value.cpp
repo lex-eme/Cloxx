@@ -2,12 +2,12 @@
 
 #include <cstdio>
 
-void printValue(Value value)
+void printValue(const Value value)
 {
     printf("%g", value);
 }
 
-void ValueArray::writeValue(Value value)
+void ValueArray::writeValue(const Value value)
 {
     values.push_back(value);
 }

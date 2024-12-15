@@ -3,8 +3,7 @@
 
 #include <cstdint>
 
-void Chunk::writeChunk(std::uint8_t byte, int line)
-{
+void Chunk::writeChunk(const std::uint8_t byte, const int line) {
     code.push_back(byte);
     lines.push_back(line);
 }

@@ -8,6 +8,7 @@
 #include "Source.h"
 #include "Value.h"
 #include "Chunk.h"
+#include "Common.h"
 
 VM::VM()
 {
@@ -17,8 +18,19 @@ VM::VM()
 InterpretResult VM::interpret(const Source& source)
 {
     Compiler compiler;
-    compiler.compile(source);
-    return InterpretResult::INTERPRET_OK;
+    chunk = new Chunk();
+    if (!compiler.compile(source, chunk))
+    {
+        free(chunk);
+        return INTERPRET_COMPILE_ERROR;
+    }
+
+    ip = chunk->code.data();
+
+    const InterpretResult result = run();
+
+    free(chunk);
+    return result;
 }
 
 InterpretResult VM::run()
@@ -34,36 +46,37 @@ InterpretResult VM::run()
     {
     #ifdef DEBUG_TRACE_EXECUTION
         printf("          ");
-        for (Value* slot = stack.data(); slot < stackTop; slot++)
+        for (const Value* slot = stack.data(); slot < stackTop; slot++)
         {
             printf("[ ");
             printValue(*slot);
             printf(" ]");
         }
         printf("\n");
-        disassembleInstruction(*chunk, (int)(ip - chunk->code.data()));
+        disassembleInstruction(*chunk, static_cast<int>(ip - chunk->code.data()));
     #endif
 
-        std::uint8_t instruction = readByte();
+        const std::uint8_t instruction = readByte();
         switch (instruction)
         {
-        case OpCode::OP_CONSTANT:
+        case OP_CONSTANT:
         {
             const Value constant = readConstant();
             push(constant);
             break;
         }
-        case OpCode::OP_ADD:      BINARY_OP(+); break;
-        case OpCode::OP_SUBTRACT: BINARY_OP(-); break;
-        case OpCode::OP_MULTIPLY: BINARY_OP(*); break;
-        case OpCode::OP_DIVIDE:   BINARY_OP(/); break;
-        case OpCode::OP_NEGATE:   push(-pop()); break;
-        case OpCode::OP_RETURN:
+        case OP_ADD:      BINARY_OP(+); break;
+        case OP_SUBTRACT: BINARY_OP(-); break;
+        case OP_MULTIPLY: BINARY_OP(*); break;
+        case OP_DIVIDE:   BINARY_OP(/); break;
+        case OP_NEGATE:   push(-pop()); break;
+        case OP_RETURN:
         {
             printValue(pop());
             printf("\n");
-            return InterpretResult::INTERPRET_OK;
+            return INTERPRET_OK;
         }
+            default: ;
         }
     }
 
@@ -87,7 +100,7 @@ void VM::resetStack()
     stackTop = stack.data();
 }
 
-void VM::push(Value value)
+void VM::push(const Value value)
 {
     *stackTop = value;
     stackTop++;

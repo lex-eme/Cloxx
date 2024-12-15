@@ -42,6 +42,7 @@ public:
     const char* current;
     int line;
 
+    Scanner() = default;
     explicit Scanner(const Source& source);
     Token nextToken();
 
@@ -56,10 +57,10 @@ private:
     bool match(char expected);
     void skipWhitespace();
     char peek() const;
-    char peekNext();
+    char peekNext() const;
     Token string();
     Token number();
     Token identifier();
-    TokenType identifierType();
+    TokenType identifierType() const;
     TokenType checkKeyword(int start, int length, const char* rest, TokenType type) const;
 };

@@ -1,6 +1,5 @@
 #include "Source.h"
 
-#include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -12,7 +11,7 @@ Source::Source(const char* path)
 
     if (!file.is_open())
     {
-        fprintf(stderr, "Could not open file \"%s\".\n", path);
+        std::cerr << "Failed to open file \"" << path << "\"." << std::endl;
         std::exit(74);
     }
 
@@ -21,20 +20,20 @@ Source::Source(const char* path)
 
     buffer = std::make_unique<char[]>(size + 1);
     if (buffer == nullptr) {
-        fprintf(stderr, "Not enough memory to read \"%s\".\n", path);
+        std::cerr << "Failed to allocate buffer." << std::endl;
         std::exit(74);
     }
 
     if (!file.read(buffer.get(), size))
     {
-        fprintf(stderr, "Could not read file \"%s\".\n", path);
+        std::cerr << "Failed to read file \"" << path << "\"." << std::endl;
         std::exit(74);
     }
 
     buffer[size] = '\0';
 }
 
-char* Source::operator[](std::size_t idx) const
+char* Source::operator[](const std::size_t idx) const
 {
     return buffer.get() + idx;
 }
