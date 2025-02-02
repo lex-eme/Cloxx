@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
 
 #include "Source.h"
@@ -50,6 +49,7 @@ public:
     void number();
     void unary();
     void binary();
+    void literal();
 
 private:
     Scanner scanner{};

@@ -29,10 +29,15 @@ private:
     std::array<Value, STACK_MAX> stack;
     Value* stackTop;
 
+
     InterpretResult run();
     inline uint8_t readByte();
     inline Value readConstant();
+    inline Value peek(int distance) const;
+    static inline bool isFalsey(Value value);
+    static bool valuesEqual(Value a, Value b);
     void resetStack();
     void push(Value value);
     Value pop();
+    void runtimeError(const char* format, ...);
 };

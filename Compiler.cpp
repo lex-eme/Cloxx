@@ -106,7 +106,7 @@ void Compiler::expression()
 void Compiler::number()
 {
     const double value = strtod(parser.previous.start, nullptr);
-    emitConstant(value);
+    emitConstant(NUMBER_VAL(value));
 }
 
 void Compiler::unary()
@@ -117,6 +117,7 @@ void Compiler::unary()
 
     switch (operatorType)
     {
+    case TOKEN_BANG: emitByte(OP_NOT); break;
     case TOKEN_MINUS: emitByte(OP_NEGATE); break;
     default: return;
     }
@@ -130,11 +131,28 @@ void Compiler::binary()
 
     switch(operatorType)
     {
-    case TOKEN_PLUS:     emitByte(OP_ADD); break;
-    case TOKEN_MINUS:    emitByte(OP_SUBTRACT); break;
-    case TOKEN_STAR:     emitByte(OP_MULTIPLY); break;
-    case TOKEN_SLASH:    emitByte(OP_DIVIDE); break;
+    case TOKEN_BANG_EQUAL:      emitBytes(OP_EQUAL, OP_NOT); break;
+    case TOKEN_EQUAL_EQUAL:     emitByte(OP_EQUAL); break;
+    case TOKEN_GREATER:         emitByte(OP_GREATER); break;
+    case TOKEN_GREATER_EQUAL:   emitBytes(OP_LESS, OP_NOT); break;
+    case TOKEN_LESS:            emitByte(OP_LESS); break;
+    case TOKEN_LESS_EQUAL:      emitBytes(OP_GREATER, OP_NOT); break;
+    case TOKEN_PLUS:            emitByte(OP_ADD); break;
+    case TOKEN_MINUS:           emitByte(OP_SUBTRACT); break;
+    case TOKEN_STAR:            emitByte(OP_MULTIPLY); break;
+    case TOKEN_SLASH:           emitByte(OP_DIVIDE); break;
     default: return; // Unreachable
+    }
+}
+
+void Compiler::literal()
+{
+    switch (parser.previous.type)
+    {
+        case TOKEN_FALSE: emitByte(OP_FALSE); break;
+        case TOKEN_NIL: emitByte(OP_NIL); break;
+        case TOKEN_TRUE: emitByte(OP_TRUE); break;
+        default: return; // Unreachable
     }
 }
 
@@ -167,46 +185,46 @@ void Compiler::parsePrecedence(const Precedence precedence)
 const ParseRule& Compiler::getRule(const TokenType type) {
     static const ParseRule rules[] =
      {
-         {&Compiler::grouping,      nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {&Compiler::unary,         &Compiler::binary,      Precedence::TERM},
-         {nullptr,                  &Compiler::binary,      Precedence::TERM},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  &Compiler::binary,      Precedence::FACTOR},
-         {nullptr,                  &Compiler::binary,      Precedence::FACTOR},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {&Compiler::number,        nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
-         {nullptr,                  nullptr,                Precedence::NONE},
+         {&Compiler::grouping,      nullptr,                Precedence::NONE},          // LEFT_PAREN
+         {nullptr,                  nullptr,                Precedence::NONE},          // RIGHT_PAREN
+         {nullptr,                  nullptr,                Precedence::NONE},          // LEFT_BRACE
+         {nullptr,                  nullptr,                Precedence::NONE},          // RIGHT_BRACE
+         {nullptr,                  nullptr,                Precedence::NONE},          // COMMA
+         {nullptr,                  nullptr,                Precedence::NONE},          // DOT
+         {&Compiler::unary,         &Compiler::binary,      Precedence::TERM},          // MINUS
+         {nullptr,                  &Compiler::binary,      Precedence::TERM},          // PLUS
+         {nullptr,                  nullptr,                Precedence::NONE},          // SEMICOLON
+         {nullptr,                  &Compiler::binary,      Precedence::FACTOR},        // SLASH
+         {nullptr,                  &Compiler::binary,      Precedence::FACTOR},        // STAR
+         {&Compiler::unary,         nullptr,                Precedence::NONE},          // BANG
+         {nullptr,                  &Compiler::binary,      Precedence::EQUALITY},      // BANG_EQUAL
+         {nullptr,                  nullptr,                Precedence::NONE},          // EQUAL
+         {nullptr,                  &Compiler::binary,      Precedence::EQUALITY},      // EQUAL_EQUAL
+         {nullptr,                  &Compiler::binary,      Precedence::COMPARISON},    // GREATER
+         {nullptr,                  &Compiler::binary,      Precedence::COMPARISON},    // GREATER_EQUAL
+         {nullptr,                  &Compiler::binary,      Precedence::COMPARISON},    // LESS
+         {nullptr,                  &Compiler::binary,      Precedence::COMPARISON},    // LESS_EQUAL
+         {nullptr,                  nullptr,                Precedence::NONE},          // IDENTIFIER
+         {nullptr,                  nullptr,                Precedence::NONE},          // STRING
+         {&Compiler::number,        nullptr,                Precedence::NONE},          // NUMBER
+         {nullptr,                  nullptr,                Precedence::NONE},          // AND
+         {nullptr,                  nullptr,                Precedence::NONE},          // CLASS
+         {nullptr,                  nullptr,                Precedence::NONE},          // ELSE
+         {&Compiler::literal,       nullptr,                Precedence::NONE},          // FALSE
+         {nullptr,                  nullptr,                Precedence::NONE},          // FOR
+         {nullptr,                  nullptr,                Precedence::NONE},          // FUN
+         {nullptr,                  nullptr,                Precedence::NONE},          // IF
+         {&Compiler::literal,       nullptr,                Precedence::NONE},          // NIL
+         {nullptr,                  nullptr,                Precedence::NONE},          // OR
+         {nullptr,                  nullptr,                Precedence::NONE},          // PRINT
+         {nullptr,                  nullptr,                Precedence::NONE},          // RETURN
+         {nullptr,                  nullptr,                Precedence::NONE},          // SUPER
+         {nullptr,                  nullptr,                Precedence::NONE},          // THIS
+         {&Compiler::literal,       nullptr,                Precedence::NONE},          // TRUE
+         {nullptr,                  nullptr,                Precedence::NONE},          // VAR
+         {nullptr,                  nullptr,                Precedence::NONE},          // WHILE
+         {nullptr,                  nullptr,                Precedence::NONE},          // ERROR
+         {nullptr,                  nullptr,                Precedence::NONE},          // EOF
      };
 
      return rules[type];
