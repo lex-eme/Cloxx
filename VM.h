@@ -34,8 +34,8 @@ private:
     inline uint8_t readByte();
     inline Value readConstant();
     inline Value peek(int distance) const;
-    static inline bool isFalsey(Value value);
-    static bool valuesEqual(Value a, Value b);
+    static inline bool isFalsey(const Value& value);
+    static bool valuesEqual(const Value& a, const Value& b);
     void resetStack();
     void push(Value value);
     Value pop();

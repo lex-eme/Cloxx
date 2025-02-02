@@ -29,7 +29,7 @@ struct Value
 #define AS_BOOL(value)      ((value).as.boolean)
 #define AS_NUMBER(value)    ((value).as.number)
 
-void printValue(Value value);
+void printValue(const Value& value);
 
 class ValueArray
 {
@@ -38,5 +38,5 @@ public:
 
     ValueArray() = default;
 
-    void writeValue(Value value);
+    void writeValue(const Value& value);
 };

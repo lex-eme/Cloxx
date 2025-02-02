@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-void printValue(const Value value)
+void printValue(const Value& value)
 {
     switch (value.type)
     {
@@ -12,7 +12,7 @@ void printValue(const Value value)
     }
 }
 
-void ValueArray::writeValue(const Value value)
+void ValueArray::writeValue(const Value& value)
 {
     values.push_back(value);
 }

@@ -124,12 +124,12 @@ Value VM::peek(const int distance) const {
     return stackTop[-1 - distance];
 }
 
-bool VM::isFalsey(const Value value)
+bool VM::isFalsey(const Value& value)
 {
     return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
 }
 
-bool VM::valuesEqual(Value a, Value b)
+bool VM::valuesEqual(const Value& a, const Value& b)
 {
     if (a.type != b.type)
     {
